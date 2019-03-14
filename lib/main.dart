@@ -14,6 +14,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'Startup Name Generator',
+      // This changes the theme of the app
+      // (if not specified, default theme is used, which is dependent on physical device).
+      theme: new ThemeData(
+        primaryColor: Colors.white,
+      ),
       home: RandomWords(),
     );
   }
