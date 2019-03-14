@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 // Import external packages like this to use them
 import 'package:english_words/english_words.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(MyApp());
 
 // The app itself is a widget.
 // Stateless widgets are immutable, meaning that their properties can't change—all values are final.
 class MyApp extends StatelessWidget {
-
   // A widget's main job is to provide a build method
   // that describes how to display the widget in terms of other, lower-level widgets
   @override
@@ -35,7 +34,7 @@ class RandomWordsState extends State<RandomWords> {
 
   // Stores the word pairings that the user favorited
   // (set does not allow duplicates).
-  final Set<WordPair> _saved = new Set<WordPair>();
+  final Set<WordPair> _saved = Set<WordPair>();
 
   // Needed to make font larger.
   final TextStyle _biggerFont = const TextStyle(fontSize: 18.0);
@@ -45,14 +44,14 @@ class RandomWordsState extends State<RandomWords> {
     // Notice that state builds widget.
     // The Scaffold widget, from the Material library, provides a default app bar,
     // a title, and a body property that holds the widget tree for the home screen.
-    return Scaffold (
+    return Scaffold(
       appBar: AppBar(
         title: Text('Startup Name Generator'),
         // This adds action icons to the toolbar
         // (some widgets, such as action, take an array of widgets (children),
         // as indicated by the square brackets [] )
         actions: <Widget>[
-          new IconButton(icon: const Icon(Icons.list), onPressed: _pushSaved),
+          IconButton(icon: const Icon(Icons.list), onPressed: _pushSaved),
         ],
       ),
       body: _buildSuggestions(),
@@ -89,8 +88,7 @@ class RandomWordsState extends State<RandomWords> {
             _suggestions.addAll(generateWordPairs().take(10));
           }
           return _buildRow(_suggestions[index]);
-        }
-    );
+        });
   }
 
   Widget _buildRow(WordPair pair) {
@@ -103,7 +101,7 @@ class RandomWordsState extends State<RandomWords> {
         style: _biggerFont,
       ),
       // This adds an icon at the end of the list item
-      trailing: new Icon(
+      trailing: Icon(
         alreadySaved ? Icons.favorite : Icons.favorite_border,
         color: alreadySaved ? Colors.red : null,
       ),
@@ -121,7 +119,50 @@ class RandomWordsState extends State<RandomWords> {
     );
   }
 
+  // This opens new page that displays favorites.
+  // In Flutter pages (screens) are called Routes.
+  // Navigator manages a stack containing the app's routes.
+  // We don't have to start new activity like in native Android app.
+  // All Flutter routes are displayed inside a single activity.
   void _pushSaved() {
+    // Note that the Navigator adds a "Back" button to the app bar.
+    Navigator.of(context).push(
+      // The content for the new page is built in MaterialPageRoute's
+      // builder property, in an anonymous function.
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          // Here we generate ListTile rows from the set of favorites
+          final Iterable<ListTile> tiles = _saved.map(
+            (WordPair pair) {
+              return ListTile(
+                title: Text(
+                  pair.asPascalCase,
+                  style: _biggerFont,
+                ),
+              );
+            },
+          );
+
+          // The divideTiles() method of ListTile adds horizontal spacing
+          // between each ListTile. The divided variable holds the final rows,
+          // converted to a list.
+          final List<Widget> divided = ListTile.divideTiles(
+            context: context,
+            tiles: tiles,
+          ).toList();
+
+          // The builder property returns a Scaffold, containing the app bar for the new route,
+          // named "Saved Suggestions." The body of the new route consists of a ListView
+          // containing the ListTiles rows; each row is separated by a divider.
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Saved Suggestions'),
+            ),
+            body: ListView(children: divided),
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -130,4 +171,3 @@ class RandomWords extends StatefulWidget {
   @override
   RandomWordsState createState() => new RandomWordsState();
 }
-
