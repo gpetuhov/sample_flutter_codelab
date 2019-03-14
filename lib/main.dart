@@ -30,8 +30,13 @@ class MyApp extends StatelessWidget {
 // (notice that Dart can contain many classes in one file).
 class RandomWordsState extends State<RandomWords> {
   // Prefixing an identifier with an underscore enforces privacy in the Dart language.
-  // Keep generated word pairs.
+  // Keeps generated word pairs.
   final List<WordPair> _suggestions = <WordPair>[];
+
+  // Stores the word pairings that the user favorited
+  // (set does not allow duplicates).
+  final Set<WordPair> _saved = new Set<WordPair>();
+
   // Needed to make font larger.
   final TextStyle _biggerFont = const TextStyle(fontSize: 18.0);
 
@@ -83,10 +88,18 @@ class RandomWordsState extends State<RandomWords> {
   }
 
   Widget _buildRow(WordPair pair) {
+    // Check to ensure that a word pairing has not already been added to favorites.
+    final bool alreadySaved = _saved.contains(pair);
+
     return ListTile(
       title: Text(
         pair.asPascalCase,
         style: _biggerFont,
+      ),
+      // This adds an icon at the end of the list item
+      trailing: new Icon(
+        alreadySaved ? Icons.favorite : Icons.favorite_border,
+        color: alreadySaved ? Colors.red : null,
       ),
     );
   }
