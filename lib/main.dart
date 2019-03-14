@@ -48,6 +48,12 @@ class RandomWordsState extends State<RandomWords> {
     return Scaffold (
       appBar: AppBar(
         title: Text('Startup Name Generator'),
+        // This adds action icons to the toolbar
+        // (some widgets, such as action, take an array of widgets (children),
+        // as indicated by the square brackets [] )
+        actions: <Widget>[
+          new IconButton(icon: const Icon(Icons.list), onPressed: _pushSaved),
+        ],
       ),
       body: _buildSuggestions(),
     );
@@ -101,7 +107,21 @@ class RandomWordsState extends State<RandomWords> {
         alreadySaved ? Icons.favorite : Icons.favorite_border,
         color: alreadySaved ? Colors.red : null,
       ),
+      onTap: () {
+        // Calling setState() triggers a call to the build() method for the State object,
+        // resulting in an update to the UI.
+        setState(() {
+          if (alreadySaved) {
+            _saved.remove(pair);
+          } else {
+            _saved.add(pair);
+          }
+        });
+      },
     );
+  }
+
+  void _pushSaved() {
   }
 }
 
